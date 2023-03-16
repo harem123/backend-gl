@@ -1,5 +1,6 @@
 const v1ServiceStats= require('../services/statisticService.js')
 
+
 const createSession = async (req, res) => {
     
    const {body} = req
@@ -20,8 +21,6 @@ const createSession = async (req, res) => {
     total_shots:  body.total_shots,
     machine_id: body.machine_id
   }
-  
-   
    try {
     createdGenre= await v1ServiceStats.postSession(newSession)
      res.status(201).send({status:"OK"} );
@@ -30,6 +29,9 @@ const createSession = async (req, res) => {
      res.status(500).send({status:"FAILED"});
    } 
  };
+
+
+
 
  module.exports = {
     createSession

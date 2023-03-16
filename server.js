@@ -10,7 +10,7 @@ const app = express();
 app.use(bodyParser.json()); 
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/", v1Router)
+app.use("/api/v1", v1Router)
 require('dotenv').config();
 let port = 3000;
 app.listen(port, () => {
