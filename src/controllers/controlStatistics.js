@@ -32,10 +32,15 @@ const createSession = async (req, res) => {
 
  const getStatByUser = async (req, res) => {
   const userId = req.params.id;  
-  console.log(userId)
+  
   try {
    statResult= await v1ServiceStats.getStats(userId)
-    res.status(201).send({status:"OK"} );
+    
+   
+    const count = statResult.rows
+    res.status(201).send({status:"OK",count} );
+   
+   
   } catch (error) {
     console.log(error)
     res.status(500).send({status:"FAILED"});

@@ -19,14 +19,18 @@ const  postSession= async (newSession) => {
 const  getStats= async (user) => {
   try{
     
-    const queryResult = await statsModel.findByPk(user);
-if (queryResult === null) {
-  console.log('Not found!');
-} else {
-  console.log(queryResult.score ); // true
-  // Its primary key is 123
-}
-    return (queryResult.score)
+    const { count, rows } = await statsModel.findAndCountAll({
+      where: {
+        user_id: user
+      },
+      order: [ [ 'createdAt', 'DESC' ]],
+      limit: 2
+    });
+
+  
+  return ({count,rows})
+
+    
   }
   catch(error){
     console.log(error)
