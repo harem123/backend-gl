@@ -21,14 +21,24 @@ const createSession = async (req, res) => {
     total_shots:  body.total_shots,
     machine_id: body.machine_id
   }
+const newAvr= {
+  user_id: body.id,
+  average_score: body.score/body.total_shots,
+    average_time: body.total_time/body.total_shots,
+    average_fails: body.total_red/body.total_shots,
+    average_hits: (body.total_green+body.total_blue+body.total_white)/body.total_shots,
+}
+console.log(newAvr)
    try {
     createdSession= await v1ServiceStats.postSession(newSession)
-     res.status(201).send({status:"OK"} );
+    createdAverage= await v1ServiceStats.postAverage(newAvr)
+     res.status(201).send({status:"OK",createdAverage} );
    } catch (error) {
      console.log(error)
      res.status(500).send({status:"FAILED"});
    } 
  };
+
 
  const getStatByUser = async (req, res) => {
   const userId = req.params.id;  
@@ -37,8 +47,38 @@ const createSession = async (req, res) => {
    statResult= await v1ServiceStats.getStats(userId)
    avrResult= await v1ServiceStats.getAvr(userId) 
    
+   const Hits = statResult.rows.reduce((acc, row) => {
+    return acc + (row.total_blue) + (row.total_green ) +(row.total_white);
+  }, 0);
+
+  const fails = statResult.rows.reduce((acc, row) => {
+    return acc + (row.total_red);
+  }, 0);
+  const score = statResult.rows.reduce((acc, row) => {
+    return acc + (row.score);
+  }, 0);
+  const time = statResult.rows.reduce((acc, row) => {
+    return acc + parseInt(row.total_time_sec);
+  }, 0);
+
+  const scoreProgres = 0.3
+  const timeProgres = 0.5
+  const failsProgres = -0.8
+  const hitProgres = 0.2
+  
+  const summary = {
+    score:{totScore: statResult.rows[0].score,
+          progress:scoreProgres},
+    time:{timeAvr:avrResult.rows[0].average_time,
+          progress:timeProgres},
+    hits:{hitPercent:avrResult.rows[0].average_hits,
+      progress:hitProgres},
+    fails:{failPercent:avrResult.rows[0].average_fails,
+        progress:failsProgres},
+  }
+   
     const count = statResult.count
-    res.status(201).send({status:"OK",count} );
+    res.status(201).send({summary,statResult} );
    
    
   } catch (error) {

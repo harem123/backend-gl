@@ -6,16 +6,26 @@ const averageModel = db.average;
 
 const  postSession= async (newSession) => {
   try{
-    const createResult = statsModel.create(newSession);
+    const createResult = await statsModel.create(newSession);
   
-    return (createResult.score)
+    return (createResult)
   }
   catch(error){
     console.log(error)
   }
   
 }
-
+const postAverage = async (newSession) => {
+  try{
+    const createResult = await averageModel.create(newSession);
+  
+    return (createResult)
+  }
+  catch(error){
+    console.log(error)
+  }
+  
+}
 const  getStats= async (user) => {
   try{
     
@@ -46,7 +56,7 @@ const  getAvr= async (user) => {
         user_id: user
       },
       order: [ [ 'createdAt', 'DESC' ]],
-      limit: 1
+      limit: 5
     });
 
   
@@ -64,6 +74,7 @@ const  getAvr= async (user) => {
     
     postSession,
     getStats,
-    getAvr
+    getAvr,
+    postAverage
     
  }
