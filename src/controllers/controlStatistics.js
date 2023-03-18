@@ -22,7 +22,7 @@ const createSession = async (req, res) => {
     machine_id: body.machine_id
   }
    try {
-    createdGenre= await v1ServiceStats.postSession(newSession)
+    createdSession= await v1ServiceStats.postSession(newSession)
      res.status(201).send({status:"OK"} );
    } catch (error) {
      console.log(error)
@@ -35,9 +35,9 @@ const createSession = async (req, res) => {
   
   try {
    statResult= await v1ServiceStats.getStats(userId)
-    
+   avrResult= await v1ServiceStats.getAvr(userId) 
    
-    const count = statResult.rows
+    const count = statResult.count
     res.status(201).send({status:"OK",count} );
    
    
