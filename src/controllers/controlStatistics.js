@@ -50,15 +50,15 @@ console.log(newAvr)
    
    const countStats = statResult.count
    const countAverage = avrResult.count
-
-   const scoreAcc = (avrResult.rows.slice(1).reduce((acc, row) => {
-    return acc + (row.average_score);
+   console.log(countAverage)
+   const scoreAcc = (avrResult.rows.reduce((acc, row) => {
+    return acc + parseInt(row.average_score);
   }, 0));
 
   const failsAcc = avrResult.rows.slice(1).reduce((acc, row) => {
-    return acc + (row.average_fails);
+    return acc + parseInt(row.average_fails);
   }, 0);
-
+  
   const time = statResult.rows.reduce((acc, row) => {
     return acc + parseInt(row.total_time_sec);
   }, 0);
@@ -80,7 +80,7 @@ console.log(newAvr)
   }
    
     
-    res.status(201).send({summary,statResult} );
+    res.status(201).send({summary,countStats,scoreAcc} );
    
    
   } catch (error) {

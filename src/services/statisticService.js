@@ -60,7 +60,7 @@ const  getAvr= async (user) => {
     });
 
   
-  return ({rows})
+  return ({count,rows})
 
     
   }
