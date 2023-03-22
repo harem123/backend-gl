@@ -1,0 +1,39 @@
+import React, { useState } from "react";
+import { Redirect } from 'react-router-dom';
+function ExampleComponent() {
+  const [message, setMessage] = useState("");
+
+  function handleApiCall() {
+    fetch("https://api.example.com/data")
+      .then((response) => {
+        if (response.ok) {
+          // Redirect to other component
+          
+    return <Redirect to="/login" />;
+  }
+        } else {
+          // Set error message
+          setMessage("Something went wrong.");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setMessage("Network error.");
+      });
+  }
+
+  return (
+    <div>
+      <button onClick={handleApiCall}>Call API</button>
+      {message && <p>{message}</p>}
+    </div>
+  );
+}
+
+In this example, we define a state variable message to store any error messages returned by the API. The handleApiCall function uses the fetch API to make a GET request to the API endpoint. 
+If the response status is 200 
+(i.e. response.ok is true), we redirect to another component using window.location.href. Otherwise, we set the message state variable to a generic error message.
+
+In the return statement, we render a button that triggers the handleApiCall function when clicked. If the message state variable is not empty, we render a paragraph element to display the error message.
+
+You can customize the code to fit your specific use case by replacing the API endpoint URL, the redirect URL, and the error message.

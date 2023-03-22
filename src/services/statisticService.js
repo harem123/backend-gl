@@ -51,7 +51,7 @@ const  getStats= async (user) => {
 const  getAvr= async (user) => {
   try{
     
-    const { rows } = await averageModel.findAndCountAll({
+    const { count,rows } = await averageModel.findAndCountAll({
       where: {
         user_id: user
       },

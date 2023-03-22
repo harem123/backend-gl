@@ -7,10 +7,12 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 //TODO const dotenv = require('dotenv');
 // TODO add try catch
+
 const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     var usr = {
         name : req.body.name,
+        last_name:req.body.lastname,
         email : req.body.email,
         password : await bcrypt.hash(req.body.password, salt)
       };

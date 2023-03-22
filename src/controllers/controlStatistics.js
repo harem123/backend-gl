@@ -47,23 +47,25 @@ console.log(newAvr)
    statResult= await v1ServiceStats.getStats(userId)
    avrResult= await v1ServiceStats.getAvr(userId) 
    
-   const Hits = statResult.rows.reduce((acc, row) => {
-    return acc + (row.total_blue) + (row.total_green ) +(row.total_white);
+   
+   const countStats = statResult.count
+   const countAverage = avrResult.count
+
+   const scoreAcc = (avrResult.rows.slice(1).reduce((acc, row) => {
+    return acc + (row.average_score);
+  }, 0));
+
+  const failsAcc = avrResult.rows.slice(1).reduce((acc, row) => {
+    return acc + (row.average_fails);
   }, 0);
 
-  const fails = statResult.rows.reduce((acc, row) => {
-    return acc + (row.total_red);
-  }, 0);
-  const score = statResult.rows.reduce((acc, row) => {
-    return acc + (row.score);
-  }, 0);
   const time = statResult.rows.reduce((acc, row) => {
     return acc + parseInt(row.total_time_sec);
   }, 0);
 
-  const scoreProgres = 0.3
-  const timeProgres = 0.5
-  const failsProgres = -0.8
+  const scoreProgres = (statResult.rows[0].score*100)/(scoreAcc/countStats)
+  const timeProgres = 0.8
+  const failsProgres = avrResult.rows[0].average_fails-(failsAcc/countAverage)
   const hitProgres = 0.2
   
   const summary = {
@@ -77,7 +79,7 @@ console.log(newAvr)
         progress:failsProgres},
   }
    
-    const count = statResult.count
+    
     res.status(201).send({summary,statResult} );
    
    
