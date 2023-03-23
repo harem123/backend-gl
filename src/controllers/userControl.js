@@ -68,13 +68,14 @@ const login = async(req,res)=>{
 
 
 function verifyToken(req, res, next) {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers["authorization"]
+  console.log(authHeader)
   if (!authHeader) {
     return res.status(401).send({ message: 'Authorization header missing' });
   }
 
-  const token = authHeader.split(' ')[1];
-  jwt.verify(token, 'secret_key', (err, decoded) => {
+  
+  jwt.verify(authHeader, 'my_secret_token', (err, decoded) => {
     if (err) {
       return res.status(401).send({ message: 'Invalid token' });
     }

@@ -141,7 +141,7 @@ const getStatsProtected = async (req, res) => {
   } 
   catch (error) {
     console.log(error)
-    res.status(500).send({status:"FAlla"});
+    res.status(500).send({status:"FAllA"});
   } 
 };
 

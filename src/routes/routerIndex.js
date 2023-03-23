@@ -11,6 +11,7 @@ router.post("/login", v1UserControl.login);
 router.get('/protected', v1UserControl.verifyToken, (req, res) => {
   res.send({ message: 'You have access to protected content' });
 });
+router.get('/protectedstats/:id', v1UserControl.verifyToken, v1ControlStatistics.getStatByUser );
 
 // exporting modules
 module.exports = router
