@@ -42,7 +42,7 @@ const login = async(req,res)=>{
         if(err) {
             res.sendStatus(403)
         } else {
-            res.json({
+            res.status(200).json({
                 text:'welcome to protected area',
                 data
             })
