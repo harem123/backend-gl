@@ -37,28 +37,30 @@ const login = async(req,res)=>{
    
    };
 
-   const protectedSection = (req,res) =>{
-    jwt.verify(req.token, 'my_secret_token', (err,data) => {
+   const validateToken= (req,res,next) =>{
+    jwt.verify(req.token, 'my_secret_token', (err) => {
         if(err) {
-            res.sendStatus(403)
+            console.log("not validated")
+          //  res.sendStatus(404)
         } else {
-            res.status(200).json({
-                text:'welcome to protected area',
-                data
-            })
+            console.log("validated")
+           next()
         }
     })
 }
 
    function ensureToken (req,res,next) {
     const bearHeader = req.headers["authorization"]
-    console.log(bearHeader)
+    console.log("token "+ bearHeader)
     if (typeof bearHeader != 'undefined') {
         const bearer = bearHeader.split(" ")
         const bearerToken = bearer[1]
         req.token = bearerToken
-        next()
-
+        //////
+        
+               next()
+           
+       //////
     } else  { res.sendStatus(403)}
 }
 
@@ -67,7 +69,7 @@ module.exports = {
     registerUser,
     login,
     ensureToken,
-    protectedSection
+    validateToken
   }
 
 

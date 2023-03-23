@@ -1,8 +1,7 @@
-const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
+
 
 const v1ServiceStats= require('../services/statisticService.js')
-
+const security= require('../controllers/userControl.js')
 
 const createSession = async (req, res) => {
     
@@ -66,6 +65,7 @@ console.log(newAvr)
   const userId = req.params.id;  
   
   try {
+     
    statResult= await v1ServiceStats.getStats(userId)
    avrResult= await v1ServiceStats.getAvr(userId) 
    
@@ -110,10 +110,38 @@ console.log(time)
     
     res.status(201).send({summary,countAverage,scoreAcc} );
    
-   
+  
   } catch (error) {
     console.log(error)
     res.status(500).send({status:"FAILED"});
+  } 
+
+};
+
+//////////////////////////// dont works
+
+const getStatsProtected = async (req, res) => {
+   
+  
+  try {
+  
+  security.ensureToken(req, res, function (err) {
+   });
+
+    security.validateToken(req, res, function (err) {
+    });
+
+    userId= req.params.id
+    statResult= await v1ServiceStats.getStats(userId)
+   avrResult= await v1ServiceStats.getAvr(userId) 
+
+   const countAverage = avrResult.count-1
+   res.status(201).send({countAverage} );
+     
+  } 
+  catch (error) {
+    console.log(error)
+    res.status(500).send({status:"FAlla"});
   } 
 };
 
@@ -121,5 +149,6 @@ console.log(time)
  module.exports = {
     createSession,
     getStatByUser,
-    protectedSection
+    protectedSection,
+    getStatsProtected
   }

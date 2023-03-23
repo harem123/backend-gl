@@ -5,7 +5,7 @@ const v1RegistControl = require('../controllers/userControl')
 
 //router.get("/sessions", v1ControlStatistics.getSessions); 
 router.post("/sessions", v1ControlStatistics.createSession); 
-router.get("/stats/:id", v1ControlStatistics.getStatByUser); 
+router.get("/stats/:id", v1ControlStatistics.getStatsProtected); 
 router.post("/register", v1RegistControl.registerUser);
 router.post("/login", v1RegistControl.login);
 // exporting modules
