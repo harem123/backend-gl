@@ -8,5 +8,9 @@ router.post("/sessions", v1ControlStatistics.createSession);
 router.get("/stats/:id", v1ControlStatistics.getStatsProtected); 
 router.post("/register", v1RegistControl.registerUser);
 router.post("/login", v1RegistControl.login);
+router.get('/protected', verifyToken, (req, res) => {
+  res.send({ message: 'You have access to protected content' });
+});
+
 // exporting modules
 module.exports = router
