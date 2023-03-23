@@ -65,6 +65,25 @@ const login = async(req,res)=>{
 }
 
 
+
+function verifyToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send({ message: 'Authorization header missing' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  jwt.verify(token, 'secret_key', (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: 'Invalid token' });
+    }
+    req.user = decoded;
+    next();
+  });
+}
+
+
+
 module.exports = {
     registerUser,
     login,
