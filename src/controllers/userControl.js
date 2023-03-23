@@ -5,6 +5,7 @@ const userModel = db.user;
 
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
+
 //TODO const dotenv = require('dotenv');
 // TODO add try catch
 
@@ -88,7 +89,8 @@ module.exports = {
     registerUser,
     login,
     ensureToken,
-    validateToken
+    validateToken,
+    verifyToken
   }
 
 
