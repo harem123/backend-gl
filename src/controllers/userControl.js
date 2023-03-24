@@ -27,7 +27,7 @@ const login = async(req,res)=>{
      const password_valid = await bcrypt.compare(req.body.password,user.password);
      if(password_valid){
          token = jwt.sign({ "id" : user.id,"email" : user.email },'my_secret_token');
-         res.status(200).json({ token : token});
+         res.status(200).json({ token : token,userId:user.id});
      } else {
        res.status(400).json({ error : "Password or user Incorrect" });
      }
