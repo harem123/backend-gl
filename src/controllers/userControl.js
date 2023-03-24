@@ -5,6 +5,7 @@ const userModel = db.user;
 
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
+
 //TODO const dotenv = require('dotenv');
 // TODO add try catch
 
@@ -26,7 +27,7 @@ const login = async(req,res)=>{
      const password_valid = await bcrypt.compare(req.body.password,user.password);
      if(password_valid){
          token = jwt.sign({ "id" : user.id,"email" : user.email },'my_secret_token');
-         res.status(200).json({ token : token});
+         res.status(200).json({ token : token,userId:user.id});
      } else {
        res.status(400).json({ error : "Password or user Incorrect" });
      }
@@ -37,31 +38,51 @@ const login = async(req,res)=>{
    
    };
 
-   const protectedSection = (req,res) =>{
-    jwt.verify(req.token, 'my_secret_token', (err,data) => {
+   const validateToken= (req,res,next) =>{
+    jwt.verify(req.token, 'my_secret_token', (err) => {
         if(err) {
-            res.sendStatus(403)
+            console.log("not validated")
+          //  res.sendStatus(404)
         } else {
-            res.json({
-                text:'welcome to protected area',
-                data
-            })
+            console.log("validated")
+           next()
         }
     })
 }
 
    function ensureToken (req,res,next) {
     const bearHeader = req.headers["authorization"]
-    console.log(bearHeader)
+    console.log("token "+ bearHeader)
     if (typeof bearHeader != 'undefined') {
         const bearer = bearHeader.split(" ")
         const bearerToken = bearer[1]
         req.token = bearerToken
-        next()
-
+        //////
+        
+               next()
+           
+       //////
     } else  { res.sendStatus(403)}
 }
 
+
+
+function verifyToken(req, res, next) {
+  const authHeader = req.headers["authorization"]
+  console.log(authHeader)
+  if (!authHeader) {
+    return res.status(401).send({ message: 'Authorization header missing' });
+  }
+
+  
+  jwt.verify(authHeader, 'my_secret_token', (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: 'Invalid token' });
+    }
+    req.user = decoded;
+    next();
+  });
+}
 
 
 
@@ -69,7 +90,8 @@ module.exports = {
     registerUser,
     login,
     ensureToken,
-    protectedSection
+    validateToken,
+    verifyToken
   }
 
 

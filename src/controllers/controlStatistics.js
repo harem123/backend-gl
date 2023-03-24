@@ -1,5 +1,7 @@
-const v1ServiceStats= require('../services/statisticService.js')
 
+
+const v1ServiceStats= require('../services/statisticService.js')
+const security= require('../controllers/userControl.js')
 
 const createSession = async (req, res) => {
     
@@ -39,34 +41,60 @@ console.log(newAvr)
    } 
  };
 
+ ////////////////////////////////////////////////
 
+ const protectedSection = async (req,res) =>{
+  const userId = req.params.id; 
+  jwt.verify(req.token, 'my_secret_token', (err,data) => {
+      if(err) {
+        res.status(403).send({status:"FAILED"});
+      } 
+      })
+      try {
+        statResult= await v1ServiceStats.getStats(userId)
+        avrResult= await v1ServiceStats.getAvr(userId) 
+        res.status(201).send({summary,countStats,scoreAcc} );
+      }  catch(error) {
+        res.status(500).send({status:"FAILED"});
+      }  
+}
+ 
+
+//////////////////////////////////////////////////
  const getStatByUser = async (req, res) => {
   const userId = req.params.id;  
   
   try {
+     
    statResult= await v1ServiceStats.getStats(userId)
    avrResult= await v1ServiceStats.getAvr(userId) 
    
    
    const countStats = statResult.count
-   const countAverage = avrResult.count
+   const countAverage = avrResult.count-1
+   
 
    const scoreAcc = (avrResult.rows.slice(1).reduce((acc, row) => {
-    return acc + (row.average_score);
+    return acc + parseInt(row.average_score);
   }, 0));
 
   const failsAcc = avrResult.rows.slice(1).reduce((acc, row) => {
-    return acc + (row.average_fails);
+    return acc + parseInt(row.average_fails);
   }, 0);
 
+  const hitsAcc = avrResult.rows.slice(1).reduce((acc, row) => {
+    return acc + parseInt(row.average_hits);
+  }, 0);
+  
   const time = statResult.rows.reduce((acc, row) => {
     return acc + parseInt(row.total_time_sec);
   }, 0);
 
-  const scoreProgres = (statResult.rows[0].score*100)/(scoreAcc/countStats)
-  const timeProgres = 0.8
+console.log(time)
+  const scoreProgres = (avrResult.rows[0].average_score)-(scoreAcc/countAverage)
+  const timeProgres = 100* avrResult.rows[0].average_time/(time/countAverage)
   const failsProgres = avrResult.rows[0].average_fails-(failsAcc/countAverage)
-  const hitProgres = 0.2
+  const hitProgres = avrResult.rows[0].average_hits-(hitsAcc/countAverage)
   
   const summary = {
     score:{totScore: statResult.rows[0].score,
@@ -80,17 +108,47 @@ console.log(newAvr)
   }
    
     
-    res.status(201).send({summary,statResult} );
+    res.status(201).send({summary,countAverage,scoreAcc} );
    
-   
+  
   } catch (error) {
     console.log(error)
     res.status(500).send({status:"FAILED"});
+  } 
+
+};
+
+//////////////////////////// dont works
+
+const getStatsProtected = async (req, res) => {
+   
+  
+  try {
+  
+  security.ensureToken(req, res, function (err) {
+   });
+
+    security.validateToken(req, res, function (err) {
+    });
+
+    userId= req.params.id
+    statResult= await v1ServiceStats.getStats(userId)
+   avrResult= await v1ServiceStats.getAvr(userId) 
+
+   const countAverage = avrResult.count-1
+   res.status(201).send({countAverage} );
+     
+  } 
+  catch (error) {
+    console.log(error)
+    res.status(500).send({status:"FAllA"});
   } 
 };
 
 
  module.exports = {
     createSession,
-    getStatByUser
+    getStatByUser,
+    protectedSection,
+    getStatsProtected
   }
