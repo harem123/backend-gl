@@ -10,23 +10,36 @@ const jwt = require('jsonwebtoken');
 // TODO add try catch
 
 const registerUser = async (req, res) => {
-    const salt = await bcrypt.genSalt(10);
-    var usr = {
-        name : req.body.name,
-        last_name:req.body.lastname,
-        email : req.body.email,
-        password : await bcrypt.hash(req.body.password, salt)
-      };
-      created_user = await userModel.create(usr);        
-      res.status(201).json({insertionId: created_user.id});
-}
+  const salt = await bcrypt.genSalt(10);
+  var usr = {
+    name: req.body.name,
+    last_name: req.body.lastname,
+    email: req.body.email,
+    password: await bcrypt.hash(req.body.password, salt),
+  };
+
+  try {
+    created_user = await userModel.create(usr);
+    res.status(201).json({ insertionId: created_user.id });
+  } catch (error) {
+    if (error.name === "SequelizeUniqueConstraintError") {
+     
+      res.status(409).json({ message: "Email is already in use" });
+    } else {
+      
+      res.status(500).json({ message: "An error occurred while registering the user" });
+    }
+  }
+};
 
 const login = async(req,res)=>{
   const user = await userModel.findOne({ where : {email : req.body.email }});
+  const userId =user.id
   if(user){
      const password_valid = await bcrypt.compare(req.body.password,user.password);
      if(password_valid){
-         token = jwt.sign({ "id" : user.id,"email" : user.email },'my_secret_token');
+         const token = jwt.sign({ userId},'my_secret_token',{ expiresIn: '8h' });
+         
          res.status(200).json({ token : token,userId:user.id});
      } else {
        res.status(400).json({ error : "Password or user Incorrect" });
@@ -38,49 +51,30 @@ const login = async(req,res)=>{
    
    };
 
-   const validateToken= (req,res,next) =>{
-    jwt.verify(req.token, 'my_secret_token', (err) => {
-        if(err) {
-            console.log("not validated")
-          //  res.sendStatus(404)
-        } else {
-            console.log("validated")
-           next()
-        }
-    })
-}
-
-   function ensureToken (req,res,next) {
-    const bearHeader = req.headers["authorization"]
-    console.log("token "+ bearHeader)
-    if (typeof bearHeader != 'undefined') {
-        const bearer = bearHeader.split(" ")
-        const bearerToken = bearer[1]
-        req.token = bearerToken
-        //////
-        
-               next()
-           
-       //////
-    } else  { res.sendStatus(403)}
-}
-
-
-
 function verifyToken(req, res, next) {
+
   const authHeader = req.headers["authorization"]
-  console.log(authHeader)
+  const reqUser=req.params.id
+  
+  
   if (!authHeader) {
     return res.status(401).send({ message: 'Authorization header missing' });
   }
-
   
   jwt.verify(authHeader, 'my_secret_token', (err, decoded) => {
     if (err) {
       return res.status(401).send({ message: 'Invalid token' });
     }
-    req.user = decoded;
-    next();
+    
+    if(decoded.exp <= Date.now() / 1000){
+      return res.status(401).send({ message: 'Invalid token' })
+    }
+    const userIdFromToken = decoded.userId
+    if(userIdFromToken == reqUser){
+      next();
+    } else {return res.status(401).send({ message: 'Invalid token' });}
+    
+
   });
 }
 
@@ -89,8 +83,6 @@ function verifyToken(req, res, next) {
 module.exports = {
     registerUser,
     login,
-    ensureToken,
-    validateToken,
     verifyToken
   }
 
