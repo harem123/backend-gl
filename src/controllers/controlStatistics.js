@@ -34,7 +34,7 @@ console.log(newAvr)
    try {
     createdSession= await v1ServiceStats.postSession(newSession)
     createdAverage= await v1ServiceStats.postAverage(newAvr)
-     res.status(201).send({status:"OK",createdAverage} );
+     res.status(201).send({status:"OK",createdSession} );
    } catch (error) {
      console.log(error)
      res.status(500).send({status:"FAILED"});
