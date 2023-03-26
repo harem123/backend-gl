@@ -10,7 +10,7 @@ chai.use(chaiHttp);
         chai
           .request(server)
           .post('/api/v1/login')
-          .send({ email: 'johndo@example.com', password: 'password123' })
+          .send({ email: 'camilo@gmail.com', password: 'camilo' })
           .end((err, res) => {
             expect(err).to.be.null;
             expect(res).to.have.status(200);
@@ -23,8 +23,8 @@ chai.use(chaiHttp);
 
   describe('GET /protectedstats/:id', () => {
     it('should return users stats when a valid token is given', (done) => {
-      const id = 1; // Replace with a valid id
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJjYW1pbG9AZ21haWwuY29tIiwiaWF0IjoxNjc5NzQ5NDcyfQ.nw5oEGg6I99NwWMxVVevSLNJ_n7MJJ7MPfkFnD5lbeo';
+      const id = 1; 
+      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY3OTg0MjAzNCwiZXhwIjoxNjc5ODcwODM0fQ.IWtRx4uoCfbC0uodMxCfRtU2VGnG8YlADwe-rOUuaM0';
   
       chai.request(server)
         .get(`/api/v1/protectedstats/${id}`)
@@ -56,7 +56,7 @@ chai.use(chaiHttp);
         chai
           .request(server)
           .post('/api/v1/register')
-          .send({ name: 'John Doe', email: 'johny2@example.com', password: 'password123' })
+          .send({ name: 'John Doe', email: 'johnuytr@example.com', password: 'password123' })
           .end((err, res) => {
             expect(err).to.be.null;
             expect(res).to.have.status(201);
