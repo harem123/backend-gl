@@ -56,7 +56,7 @@ chai.use(chaiHttp);
         chai
           .request(server)
           .post('/api/v1/register')
-          .send({ name: 'John Doe', email: 'johnuytr@example.com', password: 'password123' })
+          .send({ name: 'John Doe', email: 'johnusdffy86tr@example.com', password: 'password123' })
           .end((err, res) => {
             expect(err).to.be.null;
             expect(res).to.have.status(201);
