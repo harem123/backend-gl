@@ -6,8 +6,8 @@ const userModel = db.user;
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 
-//TODO const dotenv = require('dotenv');
-// TODO add try catch
+require('dotenv').config()
+
 
 const registerUser = async (req, res) => {
   const salt = await bcrypt.genSalt(10);
@@ -39,15 +39,15 @@ const login = async(req,res)=>{
      const password_valid = await bcrypt.compare(req.body.password,user.password);
      
      if(password_valid){
-         const token = jwt.sign({ userId},'my_secret_token',{ expiresIn: '8h' });
+         const token = jwt.sign({userId},process.env.SECRET_KEY,{ expiresIn: '8h' });
          
          res.status(200).json({ token : token,userId:user.id});
      } else {
-       res.status(400).json({ error : "Password or user Incorrect" });
+       res.status(403).json({ error : "Password or user Incorrect" });
      }
    
    }else{
-     res.status(400).json({ error :  "Password or user Incorrect"});
+     res.status(403).json({ error :  "Password or user Incorrect"});
    }
    
    };
@@ -62,18 +62,18 @@ function verifyToken(req, res, next) {
     return res.status(401).send({ message: 'Authorization header missing' });
   }
   
-  jwt.verify(authHeader, 'my_secret_token', (err, decoded) => {
+  jwt.verify(authHeader, process.env.SECRET_KEY, (err, decoded) => {
     if (err) {
-      return res.status(401).send({ message: 'Invalid token' });
+      return res.status(403).send({ message: 'Invalid token' });
     }
     
     if(decoded.exp <= Date.now() / 1000){
-      return res.status(401).send({ message: 'Invalid token' })
+      return res.status(403).send({ message: 'Invalid token' })
     }
     const userIdFromToken = decoded.userId
     if(userIdFromToken == reqUser){
       next();
-    } else {return res.status(401).send({ message: 'Invalid token' });}
+    } else {return res.status(403).send({ message: 'Invalid token' });}
     
 
   });

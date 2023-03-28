@@ -7,8 +7,9 @@ const averageModel = db.average;
 const  postSession= async (newSession) => {
   try{
     const createResult = await statsModel.create(newSession);
-  
-    return (createResult)
+    console.log(createResult)
+    const dateInsert = createResult.createdAt
+    return (dateInsert)
   }
   catch(error){
     console.log(error)

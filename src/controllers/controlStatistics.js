@@ -1,5 +1,4 @@
 
-
 const v1ServiceStats= require('../services/statisticService.js')
 const security= require('../controllers/userControl.js')
 
@@ -9,7 +8,7 @@ const createSession = async (req, res) => {
    if ( 
      !body.id 
    ){
-     return
+    res.status(500).send({status:"FAILED"});
    }
   // inicializo la info
   const newSession= {
@@ -19,22 +18,23 @@ const createSession = async (req, res) => {
    total_red: body.total_red,
     total_green: body.total_green,
     total_white: body.total_white,
-    total_time_sec: body.total_time,
+    total_time_sec: body.total_time_sec,
     total_shots:  body.total_shots,
     machine_id: body.machine_id
   }
-const newAvr= {
+const newAvr = {
   user_id: body.id,
   average_score: body.score/body.total_shots,
     average_time: body.total_time/body.total_shots,
     average_fails: body.total_red/body.total_shots,
     average_hits: (body.total_green+body.total_blue+body.total_white)/body.total_shots,
 }
-console.log(newAvr)
+    
    try {
     createdSession= await v1ServiceStats.postSession(newSession)
     createdAverage= await v1ServiceStats.postAverage(newAvr)
-     res.status(201).send({status:"OK",createdAverage} );
+   
+    res.status(201).send({status:"OK"} );
    } catch (error) {
      console.log(error)
      res.status(500).send({status:"FAILED"});
