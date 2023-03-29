@@ -45,6 +45,8 @@ const createSession = async (req, res) => {
       average_fails: (failsAcc + body.total_red) / (shots)
     }
 
+    
+
     if (getAverage.created){
       
         newAvr.average_score=  body.score /  body.total_shots
@@ -52,7 +54,11 @@ const createSession = async (req, res) => {
         newAvr.average_hits= ( body.total_blue + body.total_green +body.total_white) / (body.total_shots)
         newAvr.average_fails= ( body.total_red)  / (body.total_shots)
     }
-
+    newAvr.score_progress = (  newAvr.average_score - stats.average_score )/  stats.average_score
+    newAvr.time_progress = ( newAvr.average_time - stats.average_time)/ stats.average_time
+    newAvr.hits_progress = ( newAvr.average_hits - stats.average_hits)/ stats.average_hits
+    newAvr.fails_progress = ( newAvr.average_fails - stats.average_fails)/ stats.average_fails
+    
     console.log(newAvr.average_score)
     
     createdAverage= await v1ServiceStats.postAverage(newAvr)
@@ -117,6 +123,16 @@ const createSession = async (req, res) => {
       progress:hitProgres},
     fails:{failPercent:avrResult.rows[0].average_fails,
         progress:failsProgres},
+  }
+
+  const summary2 = {
+    score:{totScore: avrResult.rows[0].score,
+          progress:avrResult.rows[0].score_progress},
+    time:{timeAvr:avrResult.rows[0].average_time,progress:avrResult.rows[0].time_progress},
+    hits:{hitPercent:avrResult.rows[0].average_hits,
+      progress:avrResult.rows[0].hits_progress},
+    fails:{failPercent:avrResult.rows[0].average_fails,
+        progress:avrResult.rows[0].fails_progress},
   }
    
     res.status(201).send({summary,countAverage,scoreAcc} );
