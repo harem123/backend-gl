@@ -29,6 +29,7 @@ const createSession = async (req, res) => {
     getAverage= await v1ServiceStats.findOrCreateAvr(body.id)
     
     const stats = getAverage.stat
+
     let shots_acc = stats.shots_acc
     const shots = (shots_acc + body.total_shots)
     const scoreAcc= (parseInt(stats.average_score)*parseInt(stats.shots_acc))
@@ -46,7 +47,7 @@ const createSession = async (req, res) => {
     }
 
     
-
+    
     if (getAverage.created){
       
         newAvr.average_score=  body.score /  body.total_shots
@@ -59,7 +60,7 @@ const createSession = async (req, res) => {
     newAvr.hits_progress = ( newAvr.average_hits - stats.average_hits)/ stats.average_hits
     newAvr.fails_progress = ( newAvr.average_fails - stats.average_fails)/ stats.average_fails
     
-    console.log(newAvr.average_score)
+    console.log(newAvr.score_progress)
     
     createdAverage= await v1ServiceStats.postAverage(newAvr)
    
@@ -96,34 +97,7 @@ const createSession = async (req, res) => {
   try {
      
    avrResult= await v1ServiceStats.getAvr(userId) 
-   const countAverage = avrResult.count-1
-  
-   const scoreAcc = (avrResult.rows.slice(1).reduce((acc, row) => {
-    return acc + parseInt(row.average_score);
-  }, 0));
-
-  const failsAcc = avrResult.rows.slice(1).reduce((acc, row) => {
-    return acc + parseInt(row.average_fails);
-  }, 0);
-
-  const hitsAcc = avrResult.rows.slice(1).reduce((acc, row) => {
-    return acc + parseInt(row.average_hits);
-  }, 0);
-  
-
-  const scoreProgres = (avrResult.rows[0].average_score)-(scoreAcc/countAverage)
-  const failsProgres = avrResult.rows[0].average_fails-(failsAcc/countAverage)
-  const hitProgres = avrResult.rows[0].average_hits-(hitsAcc/countAverage)
-  
-  const summary = {
-    score:{totScore: avrResult.rows[0].score,
-          progress:scoreProgres},
-    time:{timeAvr:avrResult.rows[0].average_time},
-    hits:{hitPercent:avrResult.rows[0].average_hits,
-      progress:hitProgres},
-    fails:{failPercent:avrResult.rows[0].average_fails,
-        progress:failsProgres},
-  }
+   
 
   const summary2 = {
     score:{totScore: avrResult.rows[0].score,
@@ -135,7 +109,7 @@ const createSession = async (req, res) => {
         progress:avrResult.rows[0].fails_progress},
   }
    
-    res.status(201).send({summary,countAverage,scoreAcc} );
+    res.status(201).send({summary2,avrResult} );
    
   
   } catch (error) {

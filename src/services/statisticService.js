@@ -62,10 +62,10 @@ const findOrCreateAvr = async (user) => {
       average_time: 0,
       average_fails: 0,
       average_hits: 0,
-      time_progress:0,
-      score_progress:0,
-      hits_progress:0,
-      fails_progress:0
+      time_progress:1,
+      score_progress:1,
+      hits_progress:1,
+      fails_progress:1
       },
       order: [ [ 'createdAt', 'DESC' ]],
       limit: 1
