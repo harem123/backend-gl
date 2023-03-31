@@ -73,6 +73,7 @@ function verifyToken(req, res, next) {
     const userIdFromToken = decoded.userId
     if(userIdFromToken == reqUser){
       next();
+      
     } else {return res.status(403).send({ message: 'Invalid token' });}
     
 
