@@ -32,7 +32,7 @@ chai.use(chaiHttp);
         .end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.have.status(201);
-          expect(res.body).to.have.property('countAverage');
+          expect(res.body).to.have.property('countStats');
           //expect(res.body.stats).to.have.property('count');
           done();
         });
